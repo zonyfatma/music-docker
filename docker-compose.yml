@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: musikk_app
+    ports:
+      - "8080:80"               # akses: http://localhost:8080
+    volumes:
+      - ./musikk:/var/www/html  # sambungkan folder lokal ke container
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    container_name: musikk_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: musikk
+      MYSQL_USER: musikkuser
+      MYSQL_PASSWORD: musikpassword
+    ports:
+      - "3307:3306"             # kalau mau akses MySQL dari host (opsional)
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: musikk_phpmyadmin
+    restart: always
+    ports:
+      - "8081:80"               # akses: http://localhost:8081
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=musikkuser
+      - PMA_PASSWORD=musikpassword
+    depends_on:
+      - db
+
+volumes:
+  db_data:
