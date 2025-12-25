@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Quick Test - Music Player</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+			body {
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+				background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+				color: #fff;
+				padding: 20px;
+			}
+			.container {
+				max-width: 800px;
+				margin: 0 auto;
+			}
+			h1 {
+				text-align: center;
+				margin-bottom: 30px;
+				font-size: 2.5em;
+				text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+			}
+			.card {
+				background: rgba(255, 255, 255, 0.1);
+				backdrop-filter: blur(10px);
+				border-radius: 15px;
+				padding: 25px;
+				margin-bottom: 20px;
+				box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+				border: 1px solid rgba(255, 255, 255, 0.18);
+			}
+			.card h2 {
+				margin-bottom: 15px;
+				color: #ffd700;
+			}
+			.status {
+				padding: 10px 15px;
+				border-radius: 8px;
+				margin: 10px 0;
+				font-weight: 600;
+			}
+			.status.success {
+				background: rgba(34, 197, 94, 0.3);
+				border-left: 4px solid #22c55e;
+			}
+			.status.error {
+				background: rgba(239, 68, 68, 0.3);
+				border-left: 4px solid #ef4444;
+			}
+			.status.info {
+				background: rgba(59, 130, 246, 0.3);
+				border-left: 4px solid #3b82f6;
+			}
+			button {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+				border: none;
+				padding: 12px 24px;
+				border-radius: 25px;
+				font-size: 16px;
+				font-weight: 600;
+				cursor: pointer;
+				margin: 5px;
+				transition: all 0.3s;
+				box-shadow: 0 4px 15px 0 rgba(102, 126, 234, 0.4);
+			}
+			button:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 6px 20px 0 rgba(102, 126, 234, 0.6);
+			}
+			button:active {
+				transform: translateY(0);
+			}
+			.test-buttons {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				margin: 15px 0;
+			}
+			code {
+				background: rgba(0, 0, 0, 0.3);
+				padding: 2px 6px;
+				border-radius: 4px;
+				font-family: "Courier New", monospace;
+			}
+			.log-output {
+				background: #1a1a1a;
+				border-radius: 8px;
+				padding: 15px;
+				max-height: 300px;
+				overflow-y: auto;
+				font-family: "Courier New", monospace;
+				font-size: 13px;
+				margin: 10px 0;
+			}
+			.log-output div {
+				padding: 4px 0;
+				border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+			}
+			.log-output .log-success {
+				color: #22c55e;
+			}
+			.log-output .log-error {
+				color: #ef4444;
+			}
+			.log-output .log-info {
+				color: #3b82f6;
+			}
+			.log-output .log-warn {
+				color: #f59e0b;
+			}
+			.progress {
+				width: 100%;
+				height: 6px;
+				background: rgba(255, 255, 255, 0.2);
+				border-radius: 3px;
+				overflow: hidden;
+				margin: 10px 0;
+			}
+			.progress-bar {
+				height: 100%;
+				background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+				width: 0%;
+				transition: width 0.3s;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h1>🎵 Quick Test Music Player</h1>
+
+			<div class="card">
+				<h2>Status System</h2>
+				<div id="systemStatus">
+					<div class="status info">⏳ Menjalankan test...</div>
+				</div>
+			</div>
+
+			<div class="card">
+				<h2>Test Audio HTML5</h2>
+				<p style="margin-bottom: 15px">
+					Test apakah browser mendukung audio HTML5
+				</p>
+				<div class="test-buttons">
+					<button onclick="runAllTests()">🚀 Jalankan Semua Test</button>
+					<button onclick="testHTML5Support()">Test HTML5 Audio</button>
+					<button onclick="testOnlineAudio()">Test Audio Online</button>
+				</div>
+				<div id="audioTest" class="log-output"></div>
+			</div>
+
+			<div class="card">
+				<h2>Test Player Function</h2>
+				<p style="margin-bottom: 15px">Test fungsi player di halaman browse</p>
+				<div class="status info">
+					Buka halaman browse terlebih dahulu:
+					<a href="/musikk/music" target="_blank" style="color: #ffd700"
+						>http://localhost/musikk/music</a
+					>
+				</div>
+				<div class="test-buttons">
+					<button onclick="testPlayerFunction()">
+						Test playSong() Function
+					</button>
+					<button onclick="checkPlayerLoaded()">Check Player Status</button>
+				</div>
+				<div id="playerTest" class="log-output"></div>
+			</div>
+
+			<div class="card">
+				<h2>Test Database Connection</h2>
+				<p style="margin-bottom: 15px">Periksa apakah ada musik di database</p>
+				<div class="test-buttons">
+					<button onclick="checkDatabase()">Check Database</button>
+					<button onclick="window.open('/musikk/admin_music/upload', '_blank')">
+						Upload Musik
+					</button>
+				</div>
+				<div id="dbTest" class="log-output"></div>
+			</div>
+
+			<div class="card">
+				<h2>Instruksi Lengkap</h2>
+				<div style="line-height: 1.8">
+					<p>
+						<strong>Langkah 1:</strong> Klik
+						<code>Jalankan Semua Test</code> untuk test dasar
+					</p>
+					<p>
+						<strong>Langkah 2:</strong> Upload musik di
+						<a
+							href="/musikk/admin_music/upload"
+							target="_blank"
+							style="color: #ffd700"
+							>halaman admin</a
+						>
+					</p>
+					<p>
+						<strong>Langkah 3:</strong> Buka
+						<a href="/musikk/music" target="_blank" style="color: #ffd700"
+							>halaman browse</a
+						>
+						dan klik lagu
+					</p>
+					<p>
+						<strong>Langkah 4:</strong> Buka Console (F12) untuk lihat debugging
+						info
+					</p>
+					<p style="margin-top: 15px"><strong>File Dokumentasi:</strong></p>
+					<p>
+						• <code>TROUBLESHOOTING_PLAYER.md</code> - Panduan troubleshooting
+					</p>
+					<p>• <code>CARA_UPLOAD_MUSIK.md</code> - Cara upload musik</p>
+					<p>• <code>test_player.html</code> - Test player HTML5</p>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			let testAudio = null;
+
+			function log(container, message, type = "info") {
+				const div = document.getElementById(container);
+				const time = new Date().toLocaleTimeString();
+				const icon =
+					type === "success"
+						? "✓"
+						: type === "error"
+						? "✗"
+						: type === "warn"
+						? "⚠"
+						: "ℹ";
+				div.innerHTML += `<div class="log-${type}">[${time}] ${icon} ${message}</div>`;
+				div.scrollTop = div.scrollHeight;
+				console.log(`[${type.toUpperCase()}] ${message}`);
+			}
+
+			function clearLog(container) {
+				document.getElementById(container).innerHTML = "";
+			}
+
+			async function runAllTests() {
+				clearLog("audioTest");
+				clearLog("systemStatus");
+
+				log("systemStatus", "Memulai test system...", "info");
+
+				await testHTML5Support();
+				await testOnlineAudio();
+
+				log("systemStatus", "Semua test selesai!", "success");
+			}
+
+			function testHTML5Support() {
+				clearLog("audioTest");
+				log("audioTest", "Memeriksa dukungan HTML5 Audio...", "info");
+
+				const audio = document.createElement("audio");
+				const canPlayMP3 = audio.canPlayType("audio/mpeg");
+				const canPlayWAV = audio.canPlayType("audio/wav");
+				const canPlayOGG = audio.canPlayType("audio/ogg");
+
+				log("audioTest", `Browser: ${navigator.userAgent}`, "info");
+				log(
+					"audioTest",
+					`MP3 Support: ${canPlayMP3 ? "YES" : "NO"}`,
+					canPlayMP3 ? "success" : "error"
+				);
+				log(
+					"audioTest",
+					`WAV Support: ${canPlayWAV ? "YES" : "NO"}`,
+					canPlayWAV ? "success" : "error"
+				);
+				log(
+					"audioTest",
+					`OGG Support: ${canPlayOGG ? "YES" : "NO"}`,
+					canPlayOGG ? "success" : "error"
+				);
+
+				if (canPlayMP3) {
+					log("audioTest", "✓ Browser siap memutar musik!", "success");
+				} else {
+					log("audioTest", "✗ Browser tidak support MP3!", "error");
+				}
+			}
+
+			function testOnlineAudio() {
+				clearLog("audioTest");
+				log("audioTest", "Testing audio online...", "info");
+
+				if (testAudio) {
+					testAudio.pause();
+				}
+
+				testAudio = new Audio();
+				testAudio.src =
+					"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+
+				testAudio.addEventListener("loadeddata", function () {
+					log(
+						"audioTest",
+						`✓ Audio loaded! Duration: ${Math.floor(testAudio.duration)}s`,
+						"success"
+					);
+				});
+
+				testAudio.addEventListener("error", function (e) {
+					log(
+						"audioTest",
+						`✗ Error: ${e.message || "Failed to load audio"}`,
+						"error"
+					);
+				});
+
+				testAudio
+					.play()
+					.then(() => {
+						log("audioTest", "✓ Audio playing successfully!", "success");
+						log("audioTest", "Source: https://www.soundhelix.com/...", "info");
+						setTimeout(() => {
+							testAudio.pause();
+							log("audioTest", "Audio stopped for test", "info");
+						}, 3000);
+					})
+					.catch((e) => {
+						log("audioTest", `✗ Play error: ${e.message}`, "error");
+					});
+			}
+
+			function testPlayerFunction() {
+				clearLog("playerTest");
+				log("playerTest", "Testing playSong function...", "info");
+
+				if (typeof window.playSong === "function") {
+					log("playerTest", "✓ window.playSong() tersedia!", "success");
+					log("playerTest", "Mencoba memanggil playSong()...", "info");
+
+					try {
+						window.playSong({
+							id: 999,
+							title: "Test Song from Quick Test",
+							artist: "Test Artist",
+							artist_name: "Test Artist",
+							file_path:
+								"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+							duration: 180,
+						});
+						log("playerTest", "✓ playSong() berhasil dipanggil!", "success");
+						log("playerTest", "Check player di halaman browse!", "info");
+					} catch (e) {
+						log("playerTest", `✗ Error: ${e.message}`, "error");
+					}
+				} else {
+					log("playerTest", "✗ window.playSong() tidak tersedia", "error");
+					log(
+						"playerTest",
+						"Pastikan Anda buka halaman browse terlebih dahulu",
+						"warn"
+					);
+					log(
+						"playerTest",
+						"Klik link ini: http://localhost/musikk/music",
+						"info"
+					);
+				}
+			}
+
+			function checkPlayerLoaded() {
+				clearLog("playerTest");
+				log("playerTest", "Checking player status...", "info");
+
+				const checks = [
+					{
+						name: "window.playSong",
+						value: typeof window.playSong === "function",
+					},
+					{
+						name: "window.addToQueue",
+						value: typeof window.addToQueue === "function",
+					},
+					{
+						name: "#audioPlayer element",
+						value: !!document.getElementById("audioPlayer"),
+					},
+					{
+						name: "Player state",
+						value: typeof window.playerState !== "undefined",
+					},
+				];
+
+				checks.forEach((check) => {
+					log(
+						"playerTest",
+						`${check.name}: ${check.value ? "OK" : "MISSING"}`,
+						check.value ? "success" : "error"
+					);
+				});
+
+				const allOK = checks.every((c) => c.value);
+				if (allOK) {
+					log("playerTest", "✓ Player loaded successfully!", "success");
+				} else {
+					log("playerTest", "✗ Player not fully loaded", "error");
+					log("playerTest", "Buka halaman browse dulu: /musikk/music", "warn");
+				}
+			}
+
+			async function checkDatabase() {
+				clearLog("dbTest");
+				log("dbTest", "Checking database via AJAX...", "info");
+
+				try {
+					const response = await fetch("/musikk/music");
+					if (response.ok) {
+						log("dbTest", "✓ Connection to /musikk/music OK", "success");
+						log(
+							"dbTest",
+							"Buka halaman untuk lihat musik yang tersedia",
+							"info"
+						);
+					} else {
+						log("dbTest", `✗ Server response: ${response.status}`, "error");
+					}
+				} catch (e) {
+					log("dbTest", `✗ Error: ${e.message}`, "error");
+					log("dbTest", "Pastikan WAMP server running", "warn");
+				}
+			}
+
+			// Auto run basic test on load
+			window.addEventListener("load", function () {
+				setTimeout(() => {
+					testHTML5Support();
+				}, 500);
+			});
+		</script>
+	</body>
+</html>

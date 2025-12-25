@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Test Music Player</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 800px;
+				margin: 50px auto;
+				padding: 20px;
+				background: #121212;
+				color: #fff;
+			}
+			h1 {
+				color: #1db954;
+			}
+			.test-section {
+				background: #181818;
+				padding: 20px;
+				margin: 20px 0;
+				border-radius: 8px;
+			}
+			button {
+				background: #1db954;
+				color: #fff;
+				border: none;
+				padding: 12px 24px;
+				border-radius: 500px;
+				cursor: pointer;
+				margin: 10px 10px 10px 0;
+				font-weight: 600;
+			}
+			button:hover {
+				background: #1ed760;
+			}
+			.log {
+				background: #000;
+				padding: 15px;
+				margin: 10px 0;
+				border-radius: 4px;
+				font-family: monospace;
+				font-size: 12px;
+				max-height: 300px;
+				overflow-y: auto;
+			}
+			audio {
+				width: 100%;
+				margin: 20px 0;
+			}
+			.error {
+				color: #ff4444;
+			}
+			.success {
+				color: #1db954;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>🎵 Test Music Player</h1>
+
+		<div class="test-section">
+			<h2>Test 1: HTML5 Audio Basic</h2>
+			<p>Test dasar apakah browser bisa memutar audio HTML5</p>
+			<audio controls id="basicAudio">
+				<source
+					src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
+					type="audio/mpeg"
+				/>
+				Your browser does not support the audio element.
+			</audio>
+			<button onclick="testBasicAudio()">Play Test Audio</button>
+		</div>
+
+		<div class="test-section">
+			<h2>Test 2: JavaScript Audio Control</h2>
+			<p>Test kontrol audio menggunakan JavaScript</p>
+			<button onclick="testJSAudio()">Load & Play with JS</button>
+			<button onclick="stopAudio()">Stop</button>
+			<audio id="jsAudio" style="display: none"></audio>
+		</div>
+
+		<div class="test-section">
+			<h2>Test 3: Multiple Audio Sources</h2>
+			<p>Test beberapa sumber audio berbeda</p>
+			<button
+				onclick="testAudio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3')"
+			>
+				Song 1
+			</button>
+			<button
+				onclick="testAudio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3')"
+			>
+				Song 2
+			</button>
+			<button
+				onclick="testAudio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3')"
+			>
+				Song 3
+			</button>
+		</div>
+
+		<div class="test-section">
+			<h2>Test 4: Local File (if uploaded)</h2>
+			<p>Test file lokal jika sudah diupload</p>
+			<button onclick="testLocalAudio()">Test Local Audio</button>
+		</div>
+
+		<div class="test-section">
+			<h2>Console Log</h2>
+			<div class="log" id="console"></div>
+			<button onclick="clearLog()">Clear Log</button>
+		</div>
+
+		<script>
+			let currentAudio = null;
+
+			function log(message, type = "info") {
+				const consoleDiv = document.getElementById("console");
+				const time = new Date().toLocaleTimeString();
+				const className =
+					type === "error" ? "error" : type === "success" ? "success" : "";
+				consoleDiv.innerHTML += `<div class="${className}">[${time}] ${message}</div>`;
+				consoleDiv.scrollTop = consoleDiv.scrollHeight;
+				console.log(message);
+			}
+
+			function clearLog() {
+				document.getElementById("console").innerHTML = "";
+			}
+
+			function testBasicAudio() {
+				const audio = document.getElementById("basicAudio");
+				log("Testing basic audio control...");
+				audio
+					.play()
+					.then(() => log("✓ Basic audio playing successfully!", "success"))
+					.catch((e) => log("✗ Error: " + e.message, "error"));
+			}
+
+			function testJSAudio() {
+				const audio = document.getElementById("jsAudio");
+				log("Loading audio via JavaScript...");
+				audio.src =
+					"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
+				audio.load();
+
+				audio.addEventListener(
+					"loadeddata",
+					function () {
+						log("✓ Audio loaded successfully", "success");
+						log("Duration: " + Math.floor(audio.duration) + " seconds");
+					},
+					{ once: true }
+				);
+
+				audio.addEventListener(
+					"error",
+					function (e) {
+						log("✗ Error loading audio: " + e.message, "error");
+					},
+					{ once: true }
+				);
+
+				audio
+					.play()
+					.then(() => log("✓ Playing audio...", "success"))
+					.catch((e) => log("✗ Play error: " + e.message, "error"));
+
+				currentAudio = audio;
+			}
+
+			function stopAudio() {
+				if (currentAudio) {
+					currentAudio.pause();
+					currentAudio.currentTime = 0;
+					log("Audio stopped");
+				}
+			}
+
+			function testAudio(url) {
+				log("Testing URL: " + url);
+				const audio = document.getElementById("jsAudio");
+
+				if (currentAudio) {
+					currentAudio.pause();
+				}
+
+				audio.src = url;
+				audio.load();
+
+				audio.addEventListener(
+					"loadedmetadata",
+					function () {
+						log(
+							"✓ Metadata loaded - Duration: " +
+								Math.floor(audio.duration) +
+								"s",
+							"success"
+						);
+					},
+					{ once: true }
+				);
+
+				audio
+					.play()
+					.then(() => log("✓ Now playing: " + url, "success"))
+					.catch((e) => log("✗ Play error: " + e.message, "error"));
+
+				currentAudio = audio;
+			}
+
+			function testLocalAudio() {
+				// Test dengan path lokal
+				const localPath = "assets/audio/demo.mp3";
+				log("Testing local file: " + localPath);
+
+				const audio = document.getElementById("jsAudio");
+				audio.src = localPath;
+				audio.load();
+
+				audio.addEventListener(
+					"loadedmetadata",
+					function () {
+						log("✓ Local file loaded!", "success");
+					},
+					{ once: true }
+				);
+
+				audio.addEventListener(
+					"error",
+					function (e) {
+						log(
+							"✗ Local file not found. Please upload a file to assets/audio/demo.mp3",
+							"error"
+						);
+						log("Or upload music via admin panel first.", "error");
+					},
+					{ once: true }
+				);
+
+				audio
+					.play()
+					.then(() => log("✓ Playing local audio...", "success"))
+					.catch((e) => log("✗ Error: " + e.message, "error"));
+
+				currentAudio = audio;
+			}
+
+			// Log initial info
+			log("Test page loaded successfully");
+			log("Browser: " + navigator.userAgent);
+			log(
+				"Audio support: " +
+					(document.createElement("audio").canPlayType("audio/mpeg")
+						? "YES"
+						: "NO")
+			);
+		</script>
+	</body>
+</html>
